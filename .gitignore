@@ -33,3 +33,14 @@ yarn-error.*
 
 # typescript
 *.tsbuildinfo
+
+src/config
+@oetoli__oetoli2.bak.jks
+google-services (1).json
+google-services.json
+GoogleService-Info (1).plist
+GoogleService-Info.plist
+
+빌드
+
+firebase.js
