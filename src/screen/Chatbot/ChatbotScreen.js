@@ -111,8 +111,22 @@ const ChatbotScreen = () => {
                     {message.time}
                   </Text>
 
-                  <View style={styles.messageContent}>
-                    <Text style={styles.messageText}>{message.content}</Text>
+                  <View
+                    style={
+                      message.role === 1
+                        ? styles.messageContent_chatbot
+                        : styles.messageContent_user
+                    }
+                  >
+                    <Text
+                      style={
+                        message.role === 1
+                          ? styles.messageText_chatbot
+                          : styles.messageText_user
+                      }
+                    >
+                      {message.content}
+                    </Text>
                   </View>
                   <Text
                     style={[
@@ -180,16 +194,27 @@ const styles = StyleSheet.create({
   hiddenTime: {
     display: "none", // 시간을 숨김
   },
-  messageContent: {
+  messageContent_chatbot: {
     //메시지 스타일
     padding: 10,
     borderRadius: 8,
     maxWidth: "80%",
-    backgroundColor: "#007AFF", //대화 배경색
+    backgroundColor: "#a66641", //대화 배경색
   },
-  messageText: {
+  messageContent_user: {
+    //메시지 스타일
+    padding: 10,
+    borderRadius: 8,
+    maxWidth: "80%",
+    backgroundColor: "#fee500", //대화 배경색
+  },
+  messageText_chatbot: {
     //메시지 텍스트 색상
     color: "#FFFFFF",
+  },
+  messageText_user: {
+    //메시지 텍스트 색상
+    color: "black",
   },
   timeText: {
     //시간 스타일
@@ -228,8 +253,8 @@ const styles = StyleSheet.create({
   dateText: {
     //날짜 스타일
     marginBottom: 20,
-    alignItems: "center", // 수평 가운데 정렬
-    alignSelf: "center", // 수직 가운데 정렬
+    alignItems: "center",
+    alignSelf: "center",
   },
 });
 

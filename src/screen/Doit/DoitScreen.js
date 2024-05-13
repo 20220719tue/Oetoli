@@ -24,15 +24,7 @@ const DoitScreen = ({ navigation }) => {
           ]}
           onPress={() => setSelectedButton("button1")}
         >
-          <Text
-            style={
-              selectedButton === "button1"
-                ? styles.selectedButton
-                : styles.buttonText
-            }
-          >
-            Button 1
-          </Text>
+          <Text style={styles.buttonText}>진행중</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={[
@@ -41,15 +33,7 @@ const DoitScreen = ({ navigation }) => {
           ]}
           onPress={() => setSelectedButton("button2")}
         >
-          <Text
-            style={
-              selectedButton === "button2"
-                ? styles.selectedButton
-                : styles.buttonText
-            }
-          >
-            Button 2
-          </Text>
+          <Text style={styles.buttonText}>완료</Text>
         </TouchableOpacity>
       </View>
       <ScrollView style={styles.scrollView}>
@@ -70,40 +54,38 @@ const DoitScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
   },
   buttonContainer: {
     flexDirection: "row",
-    justifyContent: "space-between",
-    marginBottom: 20,
+    justifyContent: "center",
     padding: 10,
-    backgroundColor: "green",
-    borderRadius: 30,
+    backgroundColor: "#f2eeeb",
   },
   button: {
     padding: 10,
-    borderRadius: 5,
-    width: "45%",
+    width: "30%",
     alignItems: "center",
-    borderRadius: 25,
+    marginHorizontal: "10%",
+    borderTopWidth: 2,
+    borderTopColor: "transparent",
   },
   selectedButton: {
-    backgroundColor: "white",
+    backgroundColor: "#f2eeeb",
+    borderBottomWidth: 2,
+    borderBottomColor: "#c9a48f",
   },
   buttonText: {
-    color: "white",
-  },
-  selectedButton_Text: {
     color: "black",
   },
   scrollView: {
-    marginBottom: 20,
+    padding: 15,
+    backgroundColor: "white",
   },
   longButton: {
     backgroundColor: "#DDDDDD",
     padding: 15,
     borderRadius: 5,
-    marginBottom: 10,
+    marginVertical: 10,
   },
   addButton: {
     position: "absolute",

@@ -14,46 +14,12 @@ import { useSelector } from "react-redux";
 const deviceWidth = Dimensions.get("window").width;
 
 const HomeSubScreen = ({ navigation }) => {
-  const userName = useSelector((state) => state.user.name);
+  const categories = useSelector((state) => state.doit.doit);
+  console.log(categories);
+
   const moveHome = () => {
     navigation.navigate("Home");
   };
-
-  // 할일 목록
-  const categories = [
-    {
-      title: "건강",
-      images: [
-        require("../../images/test.jpg"),
-        require("../../images/test.jpg"),
-        require("../../images/test.jpg"),
-      ],
-    },
-    {
-      title: "일상생활",
-      images: [
-        require("../../images/test.jpg"),
-        require("../../images/test.jpg"),
-        require("../../images/test.jpg"),
-      ],
-    },
-    {
-      title: "자기계발",
-      images: [
-        require("../../images/test.jpg"),
-        require("../../images/test.jpg"),
-        require("../../images/test.jpg"),
-      ],
-    },
-    {
-      title: "도전",
-      images: [
-        require("../../images/test.jpg"),
-        require("../../images/test.jpg"),
-        require("../../images/test.jpg"),
-      ],
-    },
-  ];
 
   useEffect(() => {
     const onBackPress = () => {
@@ -70,22 +36,23 @@ const HomeSubScreen = ({ navigation }) => {
     };
   }, [navigation]);
 
-  // 할일 추천
   const renderCategoryItems = () => {
-    return categories.map((category, index) => (
-      <View key={index} style={styles.doit_container_middle}>
-        <View style={styles.doit_container_middle_content}>
-          <Text style={styles.doit_text_middle}>{category.title}</Text>
+    return Object.entries(categories).map(
+      ([categoryTitle, categoryItems], index) => (
+        <View key={index} style={styles.doit_container_middle}>
+          <View style={styles.doit_container_middle_content}>
+            <Text style={styles.doit_text_middle}>{categoryTitle}</Text>
+          </View>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+            {categoryItems.map((item, idx) => (
+              <TouchableOpacity key={idx} style={styles.doit_itemContainer}>
+                <Image source={{ uri: item.img }} style={styles.doit_itemImg} />
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
         </View>
-        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-          {category.images.map((image, idx) => (
-            <TouchableOpacity key={idx} style={styles.doit_itemContainer}>
-              <Image source={image} style={styles.doit_itemImg} />
-            </TouchableOpacity>
-          ))}
-        </ScrollView>
-      </View>
-    ));
+      )
+    );
   };
 
   return (

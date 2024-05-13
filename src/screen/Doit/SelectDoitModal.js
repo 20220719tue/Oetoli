@@ -21,6 +21,8 @@ const SelectDoitModal = ({ isVisible, onClose }) => {
           <View style={styles.contentContainer}>
             <Text style={styles.title}>물마시기</Text>
             <Text style={styles.text}>물을 마시는 할일입니다.</Text>
+            <Text style={styles.button_title}>인증 방식</Text>
+            <Text style={styles.text}>인증방식에 대한 설명</Text>
 
             {/* 기간 */}
             <Text style={styles.button_title}>기간</Text>

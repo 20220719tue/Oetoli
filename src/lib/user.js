@@ -25,10 +25,11 @@ export async function createUser({ id, Name, Email, PhotoURL, Job, Nickname }) {
       PhotoURL,
       Nickname,
       Job,
+      Coin: 100,
     });
-    console.log("User created successfully!");
+    console.log("회원가입성공");
   } catch (error) {
-    console.error("Error creating user:", error);
+    console.error("회원가입오류: ", error);
     throw error;
   }
 }
@@ -40,7 +41,7 @@ export async function doesUserExist(id) {
     const docSnapshot = await getDoc(userDocRef);
     return docSnapshot.exists(); // 해당 문서가 존재하면 true, 아니면 false 반환
   } catch (error) {
-    console.error("Error checking user existence:", error);
+    console.error("사용자 정보 확인 오류:", error);
     return false; // 에러 발생 시 false 반환
   }
 }
@@ -48,16 +49,19 @@ export async function doesUserExist(id) {
 // 사용자 관련 데이터 삭제 함수
 export async function deleteUserData(userId) {
   try {
-    // Firestore에서 사용자 정보 삭제
+    // // Firestore에서 사용자 정보 삭제
     await deleteDoc(doc(userCollection, userId));
 
-    // 사용자의 대화 데이터 가져오기
-    const userChatCollectionRef = collection(firestore, `user/${userId}/chat`);
-    const querySnapshot = await getDocs(userChatCollectionRef);
+    // 채팅 컬렉션 참조
+    const chatCollectionRef = collection(userCollection, `${userId}/chat`);
 
-    // 대화 데이터를 모두 삭제
-    querySnapshot.forEach(async (doc) => {
+    // 채팅 컬렉션의 모든 문서 가져오기
+    const querySnapshot = await getDocs(chatCollectionRef);
+
+    // 각 문서 삭제
+    querySnapshot.docs.forEach(async (doc) => {
       await deleteDoc(doc.ref);
+      console.log(`문서 ${doc.id} 삭제 완료`);
     });
 
     console.log("사용자 관련 데이터가 성공적으로 삭제되었습니다.");
@@ -73,16 +77,17 @@ export async function getUserAll(id) {
     const docSnapshot = await getDoc(userDocRef);
     if (docSnapshot.exists()) {
       const userData = docSnapshot.data();
-      const { Name, Email, PhotoURL, Nickname, Job } = userData;
+      console.log(userData);
+      const { Name, Email, PhotoURL, Nickname, Job, Coin } = userData;
       return {
         exists: true,
-        data: { Name, Email, PhotoURL, Nickname, Job, id },
+        data: { Name, Email, PhotoURL, Nickname, Job, id, Coin },
       };
     } else {
       return { exists: false };
     }
   } catch (error) {
-    console.error("Error checking user existence:", error);
+    console.error("사용자 정보를 가져오는데 오류가 생겼습니다.", error);
     return { exists: false };
   }
 }
@@ -140,11 +145,11 @@ export async function inputChat(userId, content, role) {
       timestamp: currentTime,
     };
 
-    console.log("Content added successfully");
+    console.log("사용자 대화를 성공적으로 저장했습니다.");
 
     return inputData;
   } catch (error) {
-    console.error("Error adding content:", error);
+    console.error("사용자 대화 저장 오류:", error);
   }
 }
 
@@ -175,7 +180,7 @@ export async function getAllChat(userId) {
 
     return chats;
   } catch (error) {
-    console.error("Error fetching user chat:", error);
+    console.error("모든 대화 정보를 가져오는데 오류 발생:", error);
     return []; // 에러 발생 시 빈 배열 반환
   }
 }
@@ -201,9 +206,9 @@ export async function updateUserPhotoURL(userId, newPhotoURL) {
     await updateDoc(userDocRef, {
       photoURL: newPhotoURL, // 사용자 정보에 새로운 프로필 이미지 URL 업데이트
     });
-    console.log("User photo URL updated successfully!");
+    console.log("사용자 이미지를 성공적으로 저장했습니다.");
   } catch (error) {
-    console.error("Error updating user photo URL:", error);
+    console.error("사용자 이미지 저장중 오류발생:", error);
     throw error;
   }
 }
@@ -218,7 +223,7 @@ export async function getPreviousImageUrl(userId) {
       return null;
     }
   } catch (error) {
-    console.error("Error getting previous image URL:", error);
+    console.error("이전 이미지의 URL을 가져오는데 오류 발생:", error);
     return null;
   }
 }
@@ -230,9 +235,9 @@ export async function updateNickname(userId, newNickname) {
     await updateDoc(userDocRef, {
       Nickname: newNickname, // 사용자 정보에 새로운 닉네임 업데이트
     });
-    console.log("User nickname updated successfully!");
+    console.log("성공적으로 닉네임을 수정하였습니다.");
   } catch (error) {
-    console.error("Error updating user nickname:", error);
+    console.error("닉네임 수정중 오류 발생:", error);
     throw error;
   }
 }
@@ -243,9 +248,9 @@ export async function updateJob(userId, newJob) {
 
   try {
     await updateDoc(userDocRef, { Job: newJob }); // 해당 사용자의 Job을 새로운 직업으로 업데이트합니다.
-    console.log("User job updated successfully!");
+    console.log("사용자 직업 수정을 완료했습니다.");
   } catch (error) {
-    console.error("Error updating user job:", error);
+    console.error("사용자 직업 수정 중 오류 발생:", error);
     throw error;
   }
 }

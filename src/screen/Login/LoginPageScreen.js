@@ -13,11 +13,13 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   checkLogin,
   getPhotoURL,
+  getUserCoin,
   getUserEmail,
   getUserId,
   getUserJob,
   getUserName,
   getUserNickname,
+  loginUser,
 } from "../../Redux/reducers/user_reducer";
 
 const LoginScreen = () => {
@@ -45,13 +47,16 @@ const LoginScreen = () => {
         setUserInfo(user);
 
         // 정보를 리덕스에 저장
-        dispatch(checkLogin(true));
-        dispatch(getUserId(user.data.id));
-        dispatch(getPhotoURL(user.data.PhotoURL));
-        dispatch(getUserName(user.data.Name));
-        dispatch(getUserEmail(user.data.Email));
-        dispatch(getUserNickname(user.data.Nickname));
-        dispatch(getUserJob(user.data.Job));
+        const loginInfo = {
+          userId: user.data.id,
+          photoURL: user.data.PhotoURL,
+          name: user.data.Name,
+          email: user.data.Email,
+          nickname: user.data.Nickname,
+          job: user.data.Job,
+          coin: user.data.Coin,
+        };
+        dispatch(loginUser(loginInfo));
 
         // 메인 페이지로 이동
         navigation.navigate("Main");
@@ -73,16 +78,18 @@ const LoginScreen = () => {
 
       if (userExists.exists) {
         // Redux에 사용자 정보 dispatch
-        dispatch(getUserId(userExists.data.id));
-        dispatch(getPhotoURL(userExists.data.PhotoURL));
-        dispatch(getUserName(userExists.data.Name));
-        dispatch(getUserEmail(userExists.data.Email));
-        dispatch(getUserNickname(userExists.data.Nickname));
-        dispatch(getUserJob(userExists.data.Job));
-        dispatch(checkLogin(true));
+        const loginInfo = {
+          userId: userExists.data.id,
+          photoURL: userExists.data.PhotoURL,
+          name: userExists.data.Name,
+          email: userExists.data.Email,
+          nickname: userExists.data.Nickname,
+          job: userExists.data.Job,
+          coin: userExists.data.Coin,
+        };
+        dispatch(loginUser(loginInfo));
 
         // 로그인 상태를 AsyncStorage에 저장
-
         await AsyncStorage.setItem("userInfo", JSON.stringify(userExists));
 
         // Main으로 이동
@@ -93,6 +100,7 @@ const LoginScreen = () => {
         dispatch(getPhotoURL(user.user.photo));
         dispatch(getUserName(user.user.name));
         dispatch(getUserEmail(user.user.email));
+        dispatch(getUserCoin(100));
         navigation.navigate("LoginNicname");
       }
     } catch (e) {
