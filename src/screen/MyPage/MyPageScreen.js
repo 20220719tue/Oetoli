@@ -121,7 +121,6 @@ const MyPageScreen = () => {
       {/* 닉네임 수정 모달 */}
       <Modal
         visible={isNickNameModalVisible}
-        animationType="slide"
         transparent={true}
         onRequestClose={() => setNickNameModalVisible(false)}
       >

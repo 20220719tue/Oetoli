@@ -44,11 +44,19 @@ const HomeSubScreen = ({ navigation }) => {
             <Text style={styles.doit_text_middle}>{categoryTitle}</Text>
           </View>
           <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-            {categoryItems.map((item, idx) => (
-              <TouchableOpacity key={idx} style={styles.doit_itemContainer}>
-                <Image source={{ uri: item.img }} style={styles.doit_itemImg} />
-              </TouchableOpacity>
-            ))}
+            <View style={styles.scroll_container}>
+              {categoryItems.map((item, idx) => (
+                <View key={idx} style={styles.view_container}>
+                  <TouchableOpacity style={styles.doit_itemContainer}>
+                    <Image
+                      source={{ uri: item.img }}
+                      style={styles.doit_itemImg}
+                    />
+                  </TouchableOpacity>
+                  <Text style={styles.text}>{item.title}</Text>
+                </View>
+              ))}
+            </View>
           </ScrollView>
         </View>
       )
@@ -83,7 +91,7 @@ const styles = StyleSheet.create({
   doit_container_middle: {
     flex: 1,
     flexDirection: "column",
-    alignItems: "center",
+    alignItems: "flex-start",
     marginBottom: 20,
     height: "100%",
   },
@@ -98,6 +106,9 @@ const styles = StyleSheet.create({
     marginStart: 20,
     fontSize: 15,
   },
+  scroll_container: {
+    flexDirection: "row",
+  },
   doit_itemContainer: {
     width: 200,
     height: 200,
@@ -111,6 +122,12 @@ const styles = StyleSheet.create({
     width: 200,
     height: 200,
     borderRadius: 20,
+  },
+  text: {},
+  view_container: {
+    justifyContent: "center",
+    alignItems: "center",
+    textAlign: "center",
   },
 });
 

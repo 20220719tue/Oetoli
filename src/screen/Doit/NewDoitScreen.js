@@ -9,26 +9,59 @@ import {
   ScrollView,
   BackHandler,
 } from "react-native";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import SelectDoitModal from "./SelectDoitModal";
+import { getAllDoit } from "../../lib/user";
+import { addDoit } from "../../Redux/reducers/doit_reducer";
 
 const deviceWidth = Dimensions.get("window").width;
 
 const NewDoitScreen = ({ navigation }) => {
-  const userName = useSelector((state) => state.user.nickname);
-  const categories = useSelector((state) => state.doit.doit);
+  const dispatch = useDispatch();
 
-  const moveHome = () => {
+  const userName = useSelector((state) => state.user.nickname);
+  const userId = useSelector((state) => state.user.userId);
+  const categories = useSelector((state) => state.doit.doit);
+  const add_list = useSelector((state) => state.doit.add_list);
+
+  const moveHome = (newDoit) => {
     navigation.navigate("Doit");
   };
 
   // 모달 관련 상태
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [selectedDoit, setSelectedDoit] = useState(null);
+  const [doitList, setDoitList] = useState([]);
 
   // 이미지 클릭 시 모달 열기
-  const openModal = () => {
+  const openModal = (item) => {
+    setSelectedDoit(item);
     setIsModalVisible(true);
   };
+
+  // 모달이 닫힐 때 선택된 요일을 받아와서 설정
+  const handleModalClose = (newDoit) => {
+    console.log(newDoit);
+    setIsModalVisible(false);
+    if (newDoit !== null) {
+      dispatch(addDoit(newDoit));
+    }
+  };
+
+  useEffect(() => {
+    const onBackPress = () => {
+      navigation.navigate("Doit");
+      return true; // 이벤트 처리 완료
+    };
+
+    // 컴포넌트가 마운트될 때 BackHandler 이벤트 추가
+    BackHandler.addEventListener("hardwareBackPress", onBackPress);
+
+    // 컴포넌트가 언마운트될 때 BackHandler 이벤트 제거
+    return () => {
+      BackHandler.removeEventListener("hardwareBackPress", onBackPress);
+    };
+  }, [navigation]);
 
   return (
     <ScrollView style={styles.container}>
@@ -57,13 +90,15 @@ const NewDoitScreen = ({ navigation }) => {
           </View>
           <ScrollView horizontal showsHorizontalScrollIndicator={false}>
             {categories[categoryTitle].map((item, idx) => (
-              <TouchableOpacity
-                key={idx}
-                style={styles.doit_itemContainer}
-                onPress={openModal}
-              >
-                <Image source={{ uri: item.img }} style={styles.doit_itemImg} />
-              </TouchableOpacity>
+              <View key={idx} style={styles.view_container}>
+                <TouchableOpacity style={styles.doit_itemContainer}>
+                  <Image
+                    source={{ uri: item.img }}
+                    style={styles.doit_itemImg}
+                  />
+                </TouchableOpacity>
+                <Text style={styles.text}>{item.title}</Text>
+              </View>
             ))}
           </ScrollView>
         </View>
@@ -71,7 +106,8 @@ const NewDoitScreen = ({ navigation }) => {
       {/* 모달 */}
       <SelectDoitModal
         isVisible={isModalVisible}
-        onClose={() => setIsModalVisible(false)}
+        onClose={handleModalClose}
+        doit={selectedDoit}
       />
     </ScrollView>
   );
@@ -107,7 +143,7 @@ const styles = StyleSheet.create({
   doit_container_middle: {
     flex: 1,
     flexDirection: "column",
-    alignItems: "center",
+    alignItems: "flex-start",
     marginBottom: 20,
   },
   doit_container_middle_content: {
@@ -134,6 +170,12 @@ const styles = StyleSheet.create({
     width: 170,
     height: 170,
     borderRadius: 20,
+  },
+  text: {},
+  view_container: {
+    justifyContent: "center",
+    alignItems: "center",
+    textAlign: "center",
   },
 });
 

@@ -14,6 +14,9 @@ import InformationScreen from "../Informaiton/InformationScreen";
 import ToliScreen from "../Toli/ToliScreen";
 import HomeSubScreen from "../Home/HomeSubScreen";
 import NewDoitScreen from "../Doit/NewDoitScreen";
+import DoitCertification from "../Doit/DoitCertification";
+import DoitGpsScreen from "../Doit/DoitGpsScreen";
+import DoitImageAIScreen from "../Doit/DoitImageAIScreen";
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -68,6 +71,21 @@ const DoitStackScreen = () => {
       <Stack.Screen
         name="NewDoit"
         component={NewDoitScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="DoitCertification"
+        component={DoitCertification}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="DoitGps"
+        component={DoitGpsScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="DoitImageAI"
+        component={DoitImageAIScreen}
         options={{ headerShown: false }}
       />
     </Stack.Navigator>

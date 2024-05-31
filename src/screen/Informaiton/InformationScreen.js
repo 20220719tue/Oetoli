@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, ActivityIndicator } from "react-native";
+import { View, Text, StyleSheet, ActivityIndicator, Image } from "react-native";
 import * as Location from "expo-location";
 import WebView from "react-native-webview";
 import { useSelector } from "react-redux";
@@ -52,6 +52,20 @@ const InformationScreen = () => {
           <ActivityIndicator size="large" color="#0000ff" />
         </View>
       )}
+      <View style={styles.container_img}>
+        <View style={styles.row}>
+          <Image source={require("../../images/E.png")} style={styles.image} />
+          <Text style={styles.rowText}>국민취업제도 운영기관</Text>
+        </View>
+        <View style={styles.row}>
+          <Image source={require("../../images/E2.png")} style={styles.image} />
+          <Text style={styles.rowText}>일경험 프로그램 운영기관</Text>
+        </View>
+        <View style={styles.row}>
+          <Image source={require("../../images/P.png")} style={styles.image} />
+          <Text style={styles.rowText}>상담센터</Text>
+        </View>
+      </View>
     </View>
   );
 };
@@ -75,6 +89,24 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
+  },
+  container_img: {
+    marginTop: 20,
+  },
+  row: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginVertical: 10,
+    paddingHorizontal: 20, // Add horizontal padding for left margin
+  },
+  image: {
+    width: 30,
+    height: 30,
+    marginRight: 10,
+  },
+  rowText: {
+    textAlign: "left",
+    marginBottom: 10, // Add margin for bottom space
   },
 });
 

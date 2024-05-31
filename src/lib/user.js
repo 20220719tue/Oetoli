@@ -8,8 +8,10 @@ import {
   updateDoc,
   Timestamp,
   addDoc,
+  arrayUnion,
 } from "firebase/firestore";
 import { firestore } from "../firebase";
+import { current } from "@reduxjs/toolkit";
 
 // 사용자 컬렉션 참조
 const userCollection = collection(firestore, "users");
@@ -252,5 +254,207 @@ export async function updateJob(userId, newJob) {
   } catch (error) {
     console.error("사용자 직업 수정 중 오류 발생:", error);
     throw error;
+  }
+}
+
+// 할일 저장 함수
+export async function inputDoit(
+  userId,
+  title,
+  description,
+  coin,
+  auth,
+  img,
+  dateStart,
+  dateEnd,
+  check
+) {
+  try {
+    // 채팅 컬렉션 참조
+    const chatCollectionRef = collection(userCollection, `${userId}/doit`);
+
+    const currentTime = Timestamp.now();
+
+    // 대화 추가
+    const docRef = await addDoc(chatCollectionRef, {
+      userId,
+      title,
+      description,
+      coin,
+      auth,
+      img,
+      dateStart,
+      dateEnd,
+      timestamp: currentTime,
+      week: [],
+      completed: false,
+      check,
+    });
+
+    const id = docRef.id;
+
+    const inputData = {
+      id,
+      userId,
+      title,
+      description,
+      coin,
+      auth,
+      img,
+      dateStart,
+      dateEnd,
+      week: [],
+      completed: false,
+      check,
+    };
+
+    console.log("사용자 할일을 성공적으로 저장했습니다.");
+    return inputData;
+  } catch (error) {
+    console.error("사용자 할일 저장 오류:", error);
+  }
+}
+
+const getCurrentDate = () => {
+  const today = new Date();
+  const yyyy = today.getFullYear();
+  const mm = String(today.getMonth() + 1);
+  const dd = String(today.getDate()).padStart(2, "0");
+  return `${yyyy}-${mm}-${dd}`;
+};
+
+// 할일 업데이트 하기
+export async function UpdateAllDoit(userId) {
+  // await UpdateAllDoit(userId);
+  try {
+    // 할일 컬렉션 참조
+    const doitCollectionRef = collection(userCollection, `${userId}/doit`);
+    // 사용자 정보 가져오기
+    const userDocRef = doc(firestore, "users", userId);
+
+    // 사용자 정보 문서 가져오기
+    const userDocSnap = await getDoc(userDocRef);
+    const userData = userDocSnap.data();
+
+    // 사용자 정보에서 현재 코인 양 가져오기
+    let currentCoin = userData.Coin;
+
+    // 할일 컬렉션의 모든 문서 가져오기
+    const querySnapshot = await getDocs(doitCollectionRef);
+
+    const currentDate = getCurrentDate().split("-");
+
+    // 각 문서의 데이터와 ID를 배열로 변환하여 반환
+    const doit = querySnapshot.docs.map((doc) => {
+      const data = doc.data();
+      return {
+        id: doc.id,
+        userId: data.userId,
+        auth: data.auth,
+        coin: data.coin,
+        dateEnd: data.dateEnd,
+        dateStart: data.dateStart,
+        description: data.description,
+        img: data.img,
+        timestamp: data.timestamp,
+        title: data.title,
+        week: data.week,
+        check: data.check,
+        completed: data.completed,
+      };
+    });
+
+    for (const item of doit) {
+      const dateEnd = item.dateEnd.split("-");
+
+      // 이전 할일이 업데이트 되지 않았을 경우
+      dateEnd[1].length === 1 ? (dateEnd[1] = "0" + dateEnd[1]) : 0;
+      dateEnd[2].length === 1 ? (dateEnd[2] = "0" + dateEnd[2]) : 0;
+
+      currentDate[1].length === 1 ? (currentDate[1] = "0" + currentDate[1]) : 0;
+      currentDate[2].length === 1 ? (currentDate[2] = "0" + currentDate[2]) : 0;
+
+      end = Number(dateEnd[0] + dateEnd[1] + dateEnd[2]);
+      cur = Number(currentDate[0] + currentDate[1] + currentDate[2]);
+      console.log(end);
+      console.log("현재 " + cur);
+
+      if (end < cur && item.completed === false) {
+        if (item.week.length >= item.check) {
+          // 해당 사용자의 코인 업데이트
+          await updateDoc(userDocRef, { Coin: (currentCoin += item.coin) });
+        }
+        // 할일 완료 상태 업데이트
+        const docRef = doc(doitCollectionRef, item.id);
+        await updateDoc(docRef, {
+          completed: true,
+        });
+      }
+    }
+
+    // 사용자 문서에 업데이트된 코인 반영
+
+    console.log("할일 문서 업데이트가 완료되었습니다.");
+  } catch (error) {
+    console.error("모든 대화 정보를 가져오는데 오류 발생:", error);
+    return []; // 에러 발생 시 빈 배열 반환
+  }
+}
+
+// 할일 정보 가져오기
+export async function getAllDoit(userId) {
+  try {
+    await UpdateAllDoit(userId);
+    // 할일 컬렉션 참조
+    const chatCollectionRef = collection(userCollection, `${userId}/doit`);
+
+    // 할일 컬렉션의 모든 문서 가져오기
+    const querySnapshot = await getDocs(chatCollectionRef);
+
+    // 각 문서의 데이터와 ID를 배열로 변환하여 반환
+    const doit = querySnapshot.docs.map((doc) => {
+      const data = doc.data();
+      return {
+        id: doc.id,
+        userId: data.userId,
+        auth: data.auth,
+        coin: data.coin,
+        dateEnd: data.dateEnd,
+        dateStart: data.dateStart,
+        description: data.description,
+        img: data.img,
+        timestamp: data.timestamp,
+        title: data.title,
+        week: data.week,
+        check: data.check,
+        completed: data.completed,
+      };
+    });
+    doit.sort((a, b) => b.timestamp - a.timestamp);
+
+    console.log("모든 대화");
+    return doit;
+  } catch (error) {
+    console.error("모든 대화 정보를 가져오는데 오류 발생:", error);
+    return []; // 에러 발생 시 빈 배열 반환
+  }
+}
+
+// 인증완료시 week배열에 오늘 날짜 추가
+export async function inputTodayDoit(userId, doitId, date) {
+  // Firestore의 사용자 컬렉션 참조
+  const userCollectionRef = collection(userCollection, `${userId}/doit`);
+
+  // 특정 doitId 문서 참조
+  const doitDocRef = doc(userCollectionRef, doitId);
+
+  try {
+    // 문서 업데이트: week 배열에 새로운 날짜 추가
+    await updateDoc(doitDocRef, {
+      week: arrayUnion(date),
+    });
+    console.log("인증완료 날짜를 추가하였습니다.");
+  } catch (error) {
+    console.error("인증완료 날짜 추가에 오류발생: ", error);
   }
 }
